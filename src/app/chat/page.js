@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -153,6 +153,19 @@ export default function ChatPage() {
   const [selectedContact, setSelectedContact] = useState(contacts[0]);
   const [messageInput, setMessageInput] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    // This code runs only on client side
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+
+    handleResize(); // check immediately
+    window.addEventListener("resize", handleResize); // add event listener
+
+    return () => window.removeEventListener("resize", handleResize); // cleanup
+  }, []);
 
   const handleSendMessage = () => {
     if (messageInput.trim()) {
@@ -167,7 +180,7 @@ export default function ChatPage() {
       <h1 className="text-3xl font-bold tracking-tight">Chat</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-        {(!isChatOpen || window.innerWidth >= 768) && (
+        {(!isChatOpen || isDesktop) && (
           <Card className="md:col-span-1">
             <CardHeader className="px-4">
               <div className="flex justify-between items-center">
@@ -272,7 +285,7 @@ export default function ChatPage() {
             </CardContent>
           </Card>
         )}
-        {(isChatOpen || window.innerWidth >= 768) && (
+        {(isChatOpen || isDesktop) && (
           <Card className="md:col-span-2 flex flex-col">
             <CardHeader className="px-6 py-4 border-b">
               <div className="flex justify-between items-center">
